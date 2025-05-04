@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime, timedelta
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Enum, ForeignKey, Sequence
+from sqlalchemy import Column, Identity, Integer, String, DateTime, Boolean, Enum, ForeignKey, Sequence
 from sqlalchemy.orm import relationship
 
 from database import Base
@@ -44,7 +44,7 @@ class User(Base):
     USER_NO = Column(Integer, primary_key=True)
     SIGN_TYPE = Column(Enum(SignType, name="SignType"))
     USER_NM = Column(String)
-    UID = Column(Integer, Sequence('user_uid_seq', start=1000000), unique=True, index=True)
+    UID = Column(Integer, Identity(start=1_000_000), unique=True, index=True, nullable=False)
     USER_EMAIL = Column(String)
 
     INSERT_DT = Column(DateTime, default=datetime.utcnow)
@@ -78,7 +78,11 @@ class Friend(Base):
     FRIEND_NO = Column(Integer, primary_key=True)
     INSERT_DT = Column(DateTime, default=datetime.utcnow)
     ACCEPT_DT = Column(DateTime)
-    ACCEPT_STATUS = Column(Enum(InviteAcceptType), name='InviteAcceptType', default=InviteAcceptType.PENDING)
+    ACCEPT_STATUS = Column(
+        Enum(InviteAcceptType, name='InviteAcceptType'),
+        default=InviteAcceptType.PENDING,
+        nullable=False
+    )
     SENDER_NO = Column(Integer, ForeignKey('user.USER_NO'))
     RECIPIENT_NO = Column(Integer, ForeignKey('user.USER_NO'))
 
@@ -124,7 +128,11 @@ class ChallengeUser(Base):
     __tablename__ = 'challenge_users'
 
     CHALLENGE_USER_NO = Column(Integer, primary_key=True)
-    ACCEPT_STATUS = Column(Enum(InviteAcceptType, name="InviteAcceptType", default=InviteAcceptType.PENDING))
+    ACCEPT_STATUS = Column(
+    Enum(InviteAcceptType, name="InviteAcceptType"),
+    default=InviteAcceptType.PENDING,
+    nullable=False
+    )
     COMMENT = Column(String)
 
     INSERT_DT = Column(DateTime, default=datetime.utcnow)
